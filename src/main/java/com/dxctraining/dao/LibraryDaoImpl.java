@@ -17,43 +17,39 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class LibraryDaoImpl implements LibraryDao {
-    private Map<String, Book> store = new HashMap<>();
-    private int generatedid;
-    public String generatedId()
-    {
-        generatedid++;
-        String strid=""+generatedid;
-        return strid;
-    }
-    public Book findBookbyId(String id) {
-        Book books=store.get(id);
-        if(books==null)
-        {
-            throw new BookNotFoundException("Book not found");
-        }
-        return books;
-    }
+	@PersistenceContext
+	private EntityManager entityManager;
 
-    public Book updateBookcost(String id, double cost) {
-       Book books=findBookbyId(id);
-       books.setCost(cost);
-       return books;
-    }
-    public void addBook(Book book) {
-        String id=book.getId();
-        store.put(id,book);
-        book.setId(id);
-    }
-    public List<Book> displayAll() {
-		Collection<Book> displaybooks= store.values();
-		List<Book> list = new ArrayList<>();
-		for (Book books : displaybooks) {
-			list.add(books);
-		}
-		return list;
-	}
-
-    public void removeBook(String id) {
-        store.remove(id);
-    }
+	 @Override
+	    public Book findBookbyId(String id) {
+	        Book book=entityManager.find(Book.class,id);
+	        if(book==null)
+	        {
+	            throw new BookNotFoundException("Book not found");
+	        }
+	        return book;
+	    }
+	    public Book save(Book book) {
+	        entityManager.persist(book);
+	        return book;
+	    }
+	    public Book updateBookcost(Book book) {
+	        book=entityManager.merge(book);
+	       return book;
+	    }
+	    public void remove(String id) {
+	        Book book=findBookbyId(id);
+	        entityManager.remove(book);
+	    }
+	    public Book findBookByName(String bookName){
+	        String jpaql="from book where name=:bookname";
+	        Query query= entityManager.createQuery(jpaql);
+	        query.setParameter("bookname",bookName);
+	        List<Book>list=query.getResultList();
+	        Book book=null;
+	        if(!list.isEmpty()){
+	           book=list.get(0);
+	        }
+	        return book;
+	    }
 }

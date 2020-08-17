@@ -8,6 +8,7 @@ import javax.persistence.Table;
 @Table(name = "library")
 
 public class Book {
+	@Id
 	private String id;
     private String name;
     private double cost;

@@ -3,10 +3,9 @@ import com.dxctraining.entities.Book;
 import java.util.*;
 public interface LibraryDao {
 	Book findBookbyId(String id);
-	List<Book>displayAll();
-	void addBook(Book book);
-	Book updateBookcost(String id,double cost);
-	void removeBook(String id);
-	
+	Book findBookByName(String bookName);
+	Book save(Book book);
+	Book updateBookcost(Book book);
+	void remove(String id);
 
 }
